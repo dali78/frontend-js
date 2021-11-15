@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annuaire</title>
+</head>
+<body>
+    <h1>Annuaire</h1>
+    <input type="text" id="typing-input" >
+    <button id="search-btn">Chercher</button>
+    <button id="list-btn" >Tout</button>
+    <div id="result-div"></div>
+
+    <!-- JS -->
+    <script>
+        function display(data){
+            //1. Sélectionner la div de résultat
+            const div = document.getElementById('result-div');
+            //2. Effacer son contenu
+            div.replaceChildren();
+            //3. @PourChaque element @Dans data
+            for (const element of data)
+            // @DebutBloc
+            {
+                // 4. Créer une nouvelle div pour chaque élément
+                const row = document.createElement('div');
+                // 5. Changer le contenu de cette div avec Object.values(element).join(' - ')
+                row.innerHTML = Object.values(element).join(' - ');
+                // 6. Rattacher la div créé à div résultat
+                div.appendChild(row);
+            // @FinBloc
+            }
+        }
+        // Fonction handleList
+        function handleList(){
+            fetch('http://localhost:4000')
+            .then(function(response){
+                return response.json();
+            })
+            .then(function (data){
+                display(data);
+            });
+        }
+
+        const listBtn = document.getElementById('list-btn');
+
+        // Je lis la fonction au bouton
+
+        listBtn.addEventListener('click', handleList);
+
+        // Fonction handleSearch
+        // function reinit(){
+            // Cette ligne permet de réinitialiser le champ automatiquement
+        //     document.getElementById('typing-input').value = '';
+        // }
+
+        function handleSearch(){
+            // afficher dans un alert ce que le user a entré dans le input
+            let searchInput = document.getElementById('typing-input').value;
+
+            fetch('http://localhost:4000/search', {
+                method: 'POST',
+                headers: { 
+                    'Accept': 'application/json',       
+                    'Content-Type': 'application/json',
+                },
+                // on récupère ce que le user a entré dans le input
+                body: JSON.stringify({text:searchInput}),
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                display(data);
+            })
+            // j'utilise la fonction de réinitialisation
+            // reinit();
+        }
+
+        const searchBtn = document.getElementById('search-btn');
+        searchBtn.addEventListener('click', handleSearch);
+    </script>
+</body>
+</html>
